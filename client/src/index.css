@@ -26,26 +26,6 @@ h1 {
   line-height: 1.1;
 }
 
-li {
-  list-style: none;
-}
-
-ul {
-  padding: 0;
-  text-align: start;
-}
-
-.contact-grid {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.contact-card {
-  border: 1px solid #646cff;
-  border-radius: 5px;
-}
-
 button {
   border-radius: 8px;
   border: 1px solid transparent;
