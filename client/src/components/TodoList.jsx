@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import TodoForm from './TodoForm';
 
 export default function TodoList() {
   const [todos, setTodos] = useState([]);
@@ -6,10 +7,10 @@ export default function TodoList() {
   useEffect(() => {
     try {
       const fetchTodos = async () => {
-        const response = await fetch('http://localhost:3000/todos');
+        const response = await fetch('http://localhost:3000/api/todos');
         const todoData = await response.json();
-        console.log('Todo list: ', todoData.data);
-        setTodos(todoData.data);
+
+        setTodos(todoData.todos);
       };
 
       fetchTodos();
@@ -22,15 +23,34 @@ export default function TodoList() {
     return (
       <div key={todo.id}>
         <h4>{todo.title}</h4>
-        <p>{todo.description}</p>
       </div>
     );
   });
 
+  const handleAddTodo = async (title) => {
+    try {
+      const response = await fetch('http://localhost:3000/api/todos', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ title }),
+      });
+
+      const todoData = response.json();
+      setTodos(todoData.todos);
+    } catch (error) {
+      console.error('Failed to add todo:', error);
+    }
+  };
+
   return (
     <>
-      <h2>Todo List</h2>
-      <div>{todoList}</div>
+      <div>
+        <TodoForm onAdd={handleAddTodo} />
+      </div>
+      <div>
+        <h2>Todo List</h2>
+        <div>{todoList}</div>
+      </div>
     </>
   );
 }
