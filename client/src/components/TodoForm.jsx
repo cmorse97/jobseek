@@ -3,12 +3,10 @@ import { useState } from 'react';
 export default function TodoForm({ onAdd }) {
   const [title, setTitle] = useState('');
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-
     if (!title.trim()) return;
-
-    await onAdd(title);
+    onAdd(title);
     setTitle('');
   };
 

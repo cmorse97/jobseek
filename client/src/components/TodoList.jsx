@@ -1,55 +1,65 @@
 import { useEffect, useState } from 'react';
 import TodoForm from './TodoForm';
+import TodoItem from './TodoItem';
 
 export default function TodoList() {
   const [todos, setTodos] = useState([]);
 
   useEffect(() => {
-    try {
-      const fetchTodos = async () => {
-        const response = await fetch('http://localhost:3000/api/todos');
-        const todoData = await response.json();
-
-        setTodos(todoData.todos);
-      };
-
-      fetchTodos();
-    } catch (error) {
-      console.error('Error fetching todo list', error);
-    }
+    fetchTodos();
   }, []);
 
-  const todoList = todos.map((todo) => {
-    return (
-      <div key={todo.id}>
-        <h4>{todo.title}</h4>
-      </div>
-    );
-  });
+  const fetchTodos = async () => {
+    const res = await fetch('http://localhost:3000/api/todos');
+    const data = await res.json();
+    setTodos(data);
+  };
 
-  const handleAddTodo = async (title) => {
-    try {
-      const response = await fetch('http://localhost:3000/api/todos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ title }),
-      });
+  const handleAdd = async (title) => {
+    await fetch('http://localhost:3000/api/todos', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title }),
+    });
 
-      const todoData = response.json();
-      setTodos(todoData.todos);
-    } catch (error) {
-      console.error('Failed to add todo:', error);
-    }
+    await fetchTodos();
+  };
+
+  const handleDelete = async (id) => {
+    await fetch(`http://localhost:3000/api/todos/${id}`, { method: 'DELETE' });
+    await fetchTodos();
+  };
+
+  const handleToggle = async (id, is_completed) => {
+    console.log('Toggling todo with id: ', id);
+    await fetch(`http://localhost:3000/api/todos/${id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ is_completed }),
+    });
+
+    await fetchTodos();
   };
 
   return (
     <>
-      <div>
-        <TodoForm onAdd={handleAddTodo} />
-      </div>
-      <div>
-        <h2>Todo List</h2>
-        <div>{todoList}</div>
+      <div className="todo-list">
+        <TodoForm onAdd={handleAdd} />
+
+        {Array.isArray(todos) && todos.length > 0 ? (
+          todos.map((todo) => (
+            <TodoItem
+              key={todo.id}
+              todo={todo}
+              onDelete={handleDelete}
+              onToggle={handleToggle}
+            />
+          ))
+        ) : (
+          <p>No todos yet!</p>
+        )}
       </div>
     </>
   );

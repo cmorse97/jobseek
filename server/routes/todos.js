@@ -3,19 +3,18 @@ import supabase from '../db/supabaseClient.js';
 
 const router = express.Router();
 
-const timeLog = (req, res, next) => {
-  console.log('Time: ', Date.now());
-  next();
-};
-router.use(timeLog);
-
 // Get all todos
 router.get('/', async (req, res) => {
   try {
-    const { data: todos, error } = await supabase.from('todos').select('*');
+    // fetch and sort todos from supabase
+    const { data: todos, error } = await supabase
+      .from('todos')
+      .select('*')
+      .order('is_completed', { ascending: true })
+      .order('id', { ascending: false });
 
     if (error) {
-      return res.status(204).json({ error: error.message });
+      return res.status(400).json({ error: error.message });
     }
 
     return res.status(200).json(todos);
@@ -30,6 +29,7 @@ router.get('/:id', async (req, res) => {
   const todoId = req.params.id;
 
   try {
+    // fetch single todo from supabase based on id
     const { data: todo, error } = await supabase
       .from('todos')
       .select()
@@ -53,10 +53,11 @@ router.post('/', async (req, res) => {
   const newTodo = req.body;
 
   try {
-    const { data: todo, error } = await supabase.from('todos').insert(newTodo);
+    // insert new todo to supabase
+    const { error: insertError } = await supabase.from('todos').insert(newTodo);
 
-    if (error) {
-      return res.status(400).json({ error: error.message });
+    if (insertError) {
+      return res.status(400).json({ error: insertError.message });
     }
 
     return res.status(201).json(newTodo);
@@ -68,28 +69,24 @@ router.post('/', async (req, res) => {
 
 // Update a todo by id
 router.put('/:id', async (req, res) => {
-  const updatedTodo = req.body;
+  const { title, is_completed } = req.body;
   const todoId = req.params.id;
 
   try {
-    const { data: todo, error: putError } = await supabase
+    const { data: todo, error: updateError } = await supabase
       .from('todos')
       .update({
-        title: updatedTodo.title ? updatedTodo.title : todo[0].title,
+        ...(title && { title }), // optional update
+        ...(typeof is_completed === 'boolean' && { is_completed }), // ensure boolean
       })
-      .eq('id', todoId);
+      .eq('id', todoId)
+      .select();
 
-    if (putError) {
-      return res.status(400).json({ error: putError.message });
+    if (updateError) {
+      return res.status(400).json({ error: updateError.message });
     }
 
-    const { data: todos, error } = await supabase.from('todos').select();
-
-    if (error) {
-      return res.status(400).json({ error: error.message });
-    }
-
-    return res.status(200).json(todos);
+    return res.status(200).json(todo);
   } catch (error) {
     console.error({ error: error.message });
     return res.status(500).json({ error: 'Internal server error' });
@@ -110,13 +107,7 @@ router.delete('/:id', async (req, res) => {
       return res.status(400).json({ error: delError.message });
     }
 
-    const { data: todos, error } = await supabase.from('todos').select();
-
-    if (error) {
-      return res.status(400).json({ error: error.message });
-    }
-
-    return res.status(200).json(todos);
+    return res.status(200).json(todo);
   } catch (error) {
     console.error({ error: error.message });
     return res.status(500).json({ error: 'Internal server error' });
