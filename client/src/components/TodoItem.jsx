@@ -17,7 +17,7 @@ export default function TodoItem({ todo, onDelete, onToggle, onEdit }) {
 
   const editingTemplate = (
     <form className="small-stack" onSubmit={handleSubmit}>
-      <div className="form-group">
+      <div className="todo-form-group">
         <label className="todo-title" htmlFor={todo.id}>
           New name for {todo.title}
         </label>

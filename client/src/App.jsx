@@ -1,15 +1,20 @@
 import './App.css';
-import TodoList from './components/TodoList';
+import Header from './components/Header.jsx';
+import Dashboard from './pages/Dashboard.jsx';
+import Login from './pages/Login.jsx';
+import Register from './pages/Register.jsx';
 
-function App() {
+const App = () => {
   return (
     <>
-      <h1>Todo List</h1>
+      <nav className="navbar">
+        <Header />
+      </nav>
       <div className="main-content">
-        <TodoList />
+        <Dashboard />
       </div>
     </>
   );
-}
+};
 
 export default App;
