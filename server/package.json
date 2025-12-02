@@ -1,11 +1,12 @@
 {
-  "name": "server",
+  "name": "jirai-server",
   "version": "1.0.0",
-  "description": "",
+  "description": "A server that creates API endpoints and handles logic for the frontend requests.",
   "main": "server.js",
   "scripts": {
     "start": "node server",
-    "dev": "node --watch --env-file=.env server"
+    "dev": "node --watch --env-file=.env server",
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -21,5 +22,8 @@
     "jsonwebtoken": "^9.0.2",
     "passport": "^0.7.0",
     "passport-local": "^1.0.0"
+  },
+  "devDependencies": {
+    "jest": "^30.2.0"
   }
 }

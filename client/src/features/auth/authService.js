@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { reset } from './authSlice';
 
 const API_URL = '/api/users/';
 

@@ -111,7 +111,7 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 // Generate JWT
-const generateToken = (id) => {
+export const generateToken = (id) => {
   console.log('Payload id: ', id);
   const payload = { id: id };
   return jwt.sign(payload, process.env.SUPABASE_JWT_SECRET, {
